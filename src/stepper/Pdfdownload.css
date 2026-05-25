@@ -1,0 +1,9 @@
+/* Style when OTP input is focused */
+.otp-input-field:focus {
+    outline: none;  /* Remove the default focus outline */
+    border: 3px solid #4caf50;  /* Green border on focus */
+    /* box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);  */
+    /* caret-color: #4caf50;   */
+    caret-color: white;  /* Change the blinking cursor color to green */
+  }
+  
