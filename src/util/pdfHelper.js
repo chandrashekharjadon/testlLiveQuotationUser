@@ -615,7 +615,7 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
         ProfileData.append("CreaterEmail", CreaterEmail);
         ProfileData.append("DateNow", Current_Date);
 
-        await Api.post("/api/profile", ProfileData,
+        const profileResponse = await Api.post("/api/profile", ProfileData,
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -624,14 +624,20 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
             }
         );
 
+        console.log("Profile Response:", profileResponse.data);
+
         // ================= SAVE DATA IN WRIRK BACKEND =================
 
+        // const CrmData = new FormData();
+        // CrmData.append("pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
+        // CrmData.append("scholar_id", QueryId);
+
         const CrmData = new FormData();
-        CrmData.append("pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
+        CrmData.append("quotation_pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
         CrmData.append("scholar_id", QueryId);
 
-        await axios.post(
-            `${import.meta.env.VITE_CRM_BASE_URL}upload-scholar-pdf`,
+        const crmResponse = await axios.post(
+            `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
             CrmData,
             {
                 headers: {
@@ -640,6 +646,8 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
             }
         );
 
+        
+        console.log("CRM Response:", crmResponse.data);
 
         // ================= PDF PREVIEW =================
         window.open(url, "_blank");

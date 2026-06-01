@@ -21,14 +21,14 @@ import {
 } from '../features/userData/userDataSlice';
 import { useMsal } from '@azure/msal-react';
 
-const options = [
-    { value: "QID001", label: "Natural Language Processing" },
-    { value: "QID002", label: "Machine Learning Research" },
-    { value: "QID003", label: "Artificial Intelligence" },
-    { value: "QID004", label: "Data Science Project" },
-    { value: "QID005", label: "Cyber Security Analysis" },
-    { value: "QID006", label: "Cloud Computing Research"}
-];
+// const options = [
+//     { value: "QID001", label: "QID001" },
+//     { value: "QID002", label: "QID002"},
+//     { value: "QID003", label: "QID003"},
+//     { value: "QID004", label: "QID004"},
+//     { value: "QID005", label: "QID005" },
+//     { value: "QID006", label: "QID006"}
+// ];
 
 
 const UserProfile = ({ nextStep, previousStep }) => {
@@ -39,10 +39,11 @@ const UserProfile = ({ nextStep, previousStep }) => {
         City, countries, states, cities, Wrirk_Penic_Guide, crmData
     } = useSelector(state => state.userData);
 
-    // const options = crmData?.data?.data?.map((q) => ({
-    //     value: q.qid,
-    //     label: q.title || q.qid,
-    // })) || [];
+    const options = crmData?.data?.data?.map((q) => ({
+        value: q.scholar.sid,
+        label: q.scholar.sid,
+    })) || [];
+    
 
     const { Test } = useSelector((state) => state.service);
     const { accounts } = useMsal();
@@ -63,11 +64,11 @@ const UserProfile = ({ nextStep, previousStep }) => {
     //set default values for QueryId...
     useEffect(() => {
         if (crmData?.data?.data?.length > 0) {
-            const firstQid = crmData.data.data[0].qid;
+            const firstQid = crmData.data.data[0].scholar.sid;
             dispatch(setQueryId(firstQid));
         }
-        const firstQid = options[0].value;
-        dispatch(setQueryId(firstQid));
+        // const firstQid = options[0].value;
+        // dispatch(setQueryId(firstQid));
     }, [crmData, dispatch]);
 
     // const API_KEY = 'NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==';
@@ -303,8 +304,3 @@ const SelectField = ({ label, value, onChange, options, getValue = o => o.value,
 );
 
 export default UserProfile;
-
-
-
-
-
