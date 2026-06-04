@@ -163,8 +163,9 @@ const ShowServices = ({ nextStep }) => {
         // To get T & E & Desc data....
         const tandeData = data?.TandE;
         dispatch(setTandE(tandeData));
+
         //Desc...
-        const desc1 = data?.Desc.find(item => item.Service_type === selectedService.value)
+        const desc1 = data?.Desc?.[0] || null;
         dispatch(setDesc(desc1));
       }
 

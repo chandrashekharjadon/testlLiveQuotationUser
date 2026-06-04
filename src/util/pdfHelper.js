@@ -634,19 +634,19 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
                 },
             }),
 
-            axios.post(
-                `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
-                CrmData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            ),
+            // axios.post(
+            //     `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
+            //     CrmData,
+            //     {
+            //         headers: {
+            //             "Content-Type": "multipart/form-data",
+            //         },
+            //     }
+            // ),
         ]);
 
         console.log("Profile Response:", profileResponse.data);
-        console.log("CRM Response:", crmResponse.data);
+        // console.log("CRM Response:", crmResponse.data);
 
         // ================= CLEANUP =================
         setTimeout(() => {
