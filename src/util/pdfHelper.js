@@ -592,15 +592,20 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
             type: "application/pdf",
         });
 
+        const fileName = `${jsondata.UserName}_${data.service_type}.pdf`;
+        const pdfFile = new File([blob], fileName, {
+            type: "application/pdf",
+        });
+
         const url = window.URL.createObjectURL(blob);
 
+        // ================= OPEN PDF IMMEDIATELY =================
+        window.open(url, "_blank");
 
-        // ================= PDF AND PROFILE DATA UPLOAD =================
+        // ================= PROFILE DATA =================
         const ProfileData = new FormData();
 
-        ProfileData.append("file", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
-
-        // ================= OTHER DATA =================
+        ProfileData.append("file", pdfFile);
         ProfileData.append("UserName", UserName);
         ProfileData.append("QueryId", QueryId);
         ProfileData.append("ResearchArea", ResearchArea);
@@ -614,53 +619,46 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
         ProfileData.append("CreaterEmail", CreaterEmail);
         ProfileData.append("DateNow", Current_Date);
 
-        const profileResponse = await Api.post("/api/profile", ProfileData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    username: UserName
-                },
-            }
-        );
-
-        console.log("Profile Response:", profileResponse.data);
-
-        // ================= SAVE DATA IN WRIRK BACKEND =================
-
-        // const CrmData = new FormData();
-        // CrmData.append("pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
-        // CrmData.append("scholar_id", QueryId);
-
+        // ================= CRM DATA =================
         const CrmData = new FormData();
-        CrmData.append("quotation_pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
+
+        CrmData.append("quotation_pdf", pdfFile);
         CrmData.append("scholar_id", ScholarId);
 
-        const crmResponse = await axios.post(
-            `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
-            CrmData,
-            {
+        // ================= RUN BOTH UPLOADS IN PARALLEL =================
+        const [profileResponse, crmResponse] = await Promise.all([
+            Api.post("/api/profile", ProfileData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
+                    username: UserName,
                 },
-            }
-        );
+            }),
 
+            axios.post(
+                `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
+                CrmData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            ),
+        ]);
 
+        console.log("Profile Response:", profileResponse.data);
         console.log("CRM Response:", crmResponse.data);
 
-        // ================= PDF PREVIEW =================
-        window.open(url, "_blank");
-
+        // ================= CLEANUP =================
         setTimeout(() => {
             window.URL.revokeObjectURL(url);
         }, 10000);
 
-        // ================= DONE =================
         dispatch(setLoader(false));
 
         return true;
+
     } catch (error) {
-        console.error("PDF Download error", error);
+        console.error("PDF Download error:", error);
         dispatch(setLoader(false));
         throw error;
     }
