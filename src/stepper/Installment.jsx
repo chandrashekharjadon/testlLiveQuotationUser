@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import Select from 'react-select';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { setUserName, setQueryId, setScholarId, setResearchArea, setResearchTopic, setCourse, setResearchDomain, } from '../features/userData/userDataSlice';
 import {
   setTimes,
   setInstallments,
@@ -16,9 +18,41 @@ import {
   setRemark,
   setInstallmentData,
 } from '../features/installment/installmentSlice';
+import { useGetAllQueriesByIdQuery } from '../services/crmapidata';
+
+// const options = [
+//   { value: "QID001", label: "QID001" },
+//   { value: "QID002", label: "QID002" },
+//   { value: "QID003", label: "QID003" },
+//   { value: "QID004", label: "QID004" },
+//   { value: "QID005", label: "QID005" },
+//   { value: "QID006", label: "QID006" }
+// ];
 
 const Installment = ({ nextStep, previousStep }) => {
   const dispatch = useDispatch();
+
+  //Get Data 
+  const { UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, crmData } = useSelector(state => state.userData);
+  const options = crmData?.data?.data?.map((q) => ({
+    value: q.qid,
+    label: q.qid,
+  })) || [];
+
+  const { data: CrmQueryData, error, isLoading } = useGetAllQueriesByIdQuery(QueryId, { skip: !QueryId });
+  // Get Data from CRM API and set in store in userDataSlice
+  useEffect(() => {
+    if (!CrmQueryData?.data) return;    
+    dispatch(setUserName(CrmQueryData.data?.scholar?.name || 'NA'));
+    dispatch(setScholarId(CrmQueryData.data?.scholar?.sid || 'NA'));
+    dispatch(setResearchArea(CrmQueryData.data?.area?.name || 'NA'));
+    dispatch(setResearchTopic(CrmQueryData.data?.title || 'NA'));
+    dispatch(setCourse(CrmQueryData.data?.scholar?.course || 'NA'));
+    dispatch(setResearchDomain(CrmQueryData.data?.domain || 'NA'));
+  }, [CrmQueryData, dispatch]);
+
+  console.log('QueryId', QueryId);
+
 
   const { calculationResult, Currency, Test } = useSelector((state) => state.service);
 
@@ -102,7 +136,13 @@ const Installment = ({ nextStep, previousStep }) => {
     dispatch(setText(newTexts));
   };
 
-  const isButtonDisabled = Times > 0 && (Installments.some((amt) => amt <= 0) || Text.some((text) => text.trim() === ''));
+  const isButtonDisabled = Times > 0 && (
+    Installments.some((amt) => Number(amt) <= 0) ||
+    Text.some((text) => !text?.trim()) ||
+    !QueryId
+  );
+
+
   const isMismatch = parseFloat(InstallmentTotal) !== parseFloat(MainTotal);
 
   const handleSubmitandNext = () => {
@@ -153,7 +193,7 @@ const Installment = ({ nextStep, previousStep }) => {
                       <th>Serial</th>
                       <th>Module Name</th>
                       <th>Cost</th>
-                      { Currency === 'Rupee' && (<th>GST</th>) }
+                      {Currency === 'Rupee' && (<th>GST</th>)}
                       <th>Amount</th>
                     </tr>
                   </thead>
@@ -178,14 +218,14 @@ const Installment = ({ nextStep, previousStep }) => {
                             className="form-control"
                           />
                         </td>
-                        { Currency === 'Rupee' &&  <td>
+                        {Currency === 'Rupee' && <td>
                           <input
                             type="number"
                             value={Gst2[index]}
                             className="form-control"
                             disabled
                           />
-                        </td> }
+                        </td>}
                         <td>
                           <input
                             type="number"
@@ -208,15 +248,36 @@ const Installment = ({ nextStep, previousStep }) => {
               <div className="col-12 col-md">Main Total: {MainTotal}</div>
             </div>
 
-            <div className="d-flex flex-column flex-md-row align-items-md-center mb-3">
-              <label className="me-2 mb-1 mb-md-0">VALID Till:</label>
-              <DatePicker
-                selected={SelectedDate}
-                onChange={(date) => dispatch(setSelectedDate(date))}
-                showIcon
-                toggleCalendarOnIconClick
-                className="form-control"
-              />
+            <div className="row mb-3 d-flex justify-content-between">
+              {/* Valid Till */}
+              <div className="col-md-6 mb-3 d-flex flex-column">
+                <label className="form-label fw-medium">
+                  VALID Till
+                </label>
+                <DatePicker
+                  selected={SelectedDate}
+                  onChange={(date) => dispatch(setSelectedDate(date))}
+                  showIcon
+                  toggleCalendarOnIconClick
+                  className="form-control"
+                  dateFormat="dd/MM/yyyy"
+                />
+              </div>
+
+              {/* Query Id */}
+              <div className="col-md-6 mb-3">
+                <label className="form-label fw-medium">
+                  Query Id <span className="text-danger">*</span>
+                </label>
+
+                <Select
+                  options={options}
+                  maxMenuHeight={120}
+                  onChange={(selectedOption) => dispatch(setQueryId(selectedOption?.value))}
+                  placeholder="Select Query Id"
+                  required
+                />
+              </div>
             </div>
 
             <div className="mb-3">

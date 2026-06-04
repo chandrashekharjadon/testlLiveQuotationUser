@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     UserName: '',
     QueryId: '',
+    ScholarId: '',
     ResearchArea: '',
     ResearchTopic: '',
     Course: '',
@@ -30,6 +31,7 @@ const userDataSlice = createSlice({
     reducers: {
         setUserName: (state, action) => { state.UserName = action.payload },
         setQueryId: (state, action) => { state.QueryId = action.payload },
+        setScholarId: (state, action) => { state.ScholarId = action.payload },
         setResearchArea: (state, action) => { state.ResearchArea = action.payload },
         setResearchTopic: (state, action) => { state.ResearchTopic = action.payload },
         setCourse: (state, action) => { state.Course = action.payload },
@@ -68,6 +70,7 @@ const userDataSlice = createSlice({
 export const {
     setUserName,
     setQueryId,
+    setScholarId,
     setResearchArea,
     setResearchTopic,
     setCourse,

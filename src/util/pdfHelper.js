@@ -483,8 +483,7 @@ export const Tool_calc = (ToolUp, Page, threshold, Currency, ToolDiscounts, PorA
 // pdf download...
 export const download_pdf = async (service, installment, userData, TandE, Desc, Api, dispatch) => {
     const { selectedService, selectedMethod, Addons, AddonsItems, Price, ResCatOne, Demand, Symbol, ToolUp, calculationResult } = service;
-
-    const { UserName, QueryId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, State, City, Country, CreaterEmail, crmQidData, Wrirk_Penic_Guide } = userData;
+    const { UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, State, City, Country, CreaterEmail, crmQidData, Wrirk_Penic_Guide } = userData;
 
     // ================= DESCRIPTION =================
     let cleanText = "";
@@ -634,7 +633,7 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
 
         const CrmData = new FormData();
         CrmData.append("quotation_pdf", new File([blob], `${jsondata.UserName}_${data.service_type}.pdf`, { type: "application/pdf" }));
-        CrmData.append("scholar_id", QueryId);
+        CrmData.append("scholar_id", ScholarId);
 
         const crmResponse = await axios.post(
             `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
@@ -646,7 +645,7 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
             }
         );
 
-        
+
         console.log("CRM Response:", crmResponse.data);
 
         // ================= PDF PREVIEW =================

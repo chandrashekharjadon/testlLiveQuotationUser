@@ -5,6 +5,7 @@ import Select from 'react-select';
 import {
     setUserName,
     setQueryId,
+    setScholarId,
     setResearchArea,
     setResearchTopic,
     setCourse,
@@ -20,6 +21,7 @@ import {
     setWrirk_Penic_Guide
 } from '../features/userData/userDataSlice';
 import { useMsal } from '@azure/msal-react';
+import { useGetAllQueriesByIdQuery } from '../services/crmapidata';
 
 // const options = [
 //     { value: "QID001", label: "QID001" },
@@ -30,20 +32,9 @@ import { useMsal } from '@azure/msal-react';
 //     { value: "QID006", label: "QID006"}
 // ];
 
-
 const UserProfile = ({ nextStep, previousStep }) => {
     const dispatch = useDispatch();
-    const {
-        UserName, QueryId, ResearchArea, ResearchTopic, Course,
-        ResearchDomain, Createdby, CountryCode, StateCode,
-        City, countries, states, cities, Wrirk_Penic_Guide, crmData
-    } = useSelector(state => state.userData);
-
-    const options = crmData?.data?.data?.map((q) => ({
-        value: q.scholar.sid,
-        label: q.scholar.sid,
-    })) || [];
-    
+    const {UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, CountryCode, StateCode,City, countries, states, cities, Wrirk_Penic_Guide} = useSelector(state => state.userData);
 
     const { Test } = useSelector((state) => state.service);
     const { accounts } = useMsal();
@@ -52,24 +43,8 @@ const UserProfile = ({ nextStep, previousStep }) => {
         if (accounts.length > 0) {
             dispatch(setCreatedby(accounts[0].name));
             dispatch(setCreaterEmail(accounts[0].username));
-
-            dispatch(setUserName(Test ? 'test' : ''));
-            dispatch(setResearchArea(Test ? 'test' : ''));
-            dispatch(setResearchTopic(Test ? 'test' : ''));
-            dispatch(setCourse(Test ? 'PhD' : ''));
-            dispatch(setResearchDomain(Test ? 'test' : ''));
         }
     }, [accounts, Test, dispatch]);
-
-    //set default values for QueryId...
-    useEffect(() => {
-        if (crmData?.data?.data?.length > 0) {
-            const firstQid = crmData.data.data[0].scholar.sid;
-            dispatch(setQueryId(firstQid));
-        }
-        // const firstQid = options[0].value;
-        // dispatch(setQueryId(firstQid));
-    }, [crmData, dispatch]);
 
     // const API_KEY = 'NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==';
     const API_KEY = '4f349a31bef048eae97f0d7f3eec8b2aba3ca7312e24fc62ef3ba885f22dac2f';
@@ -169,23 +144,7 @@ const UserProfile = ({ nextStep, previousStep }) => {
                     <div className="row">
                         <div className="col-md-6">
                             <InputField label="Full Name" value={UserName} onChange={e => dispatch(setUserName(e.target.value))} required />
-
-                            {/* <InputField label="Query Id" value={QueryId} onChange={e => dispatch(setQueryId(e.target.value))} required /> */}
-
-                            <div className="mb-4">
-                                <label className="block mb-2 font-medium">
-                                    Query Id <span className="text-danger">*</span>
-                                </label>
-
-                                <Select
-                                    options={options}
-                                    maxMenuHeight={120}
-                                    value={options.find((option) => option.value === QueryId) || options[0]}
-                                    onChange={(selectedOption) => dispatch(setQueryId(selectedOption.value))}
-                                    required
-                                />
-                            </div>
-
+                            <InputField label="Query Id" value={QueryId} onChange={e => dispatch(setQueryId(e.target.value))} required />
                             <InputField label="Research Area" value={ResearchArea} onChange={e => dispatch(setResearchArea(e.target.value))} required />
                             <InputField label="Research Topic" value={ResearchTopic} onChange={e => dispatch(setResearchTopic(e.target.value))} required />
 
@@ -194,7 +153,7 @@ const UserProfile = ({ nextStep, previousStep }) => {
                         </div>
 
                         <div className="col-md-6">
-                            <SelectField
+                            {/* <SelectField
                                 label="Course"
                                 value={Course}
                                 onChange={e => dispatch(setCourse(e.target.value))}
@@ -203,7 +162,8 @@ const UserProfile = ({ nextStep, previousStep }) => {
                                     { value: 'Masters', label: 'Masters' },
                                     { value: 'Bachelors', label: 'Bachelors' }
                                 ]}
-                            />
+                            /> */}
+                            <InputField label="Course" value={Course} onChange={e => dispatch(setCourse(e.target.value))} required />
                             <InputField label="Research Domain" value={ResearchDomain} onChange={e => dispatch(setResearchDomain(e.target.value))} required />
                             <InputField label="Created By" value={Createdby} onChange={e => dispatch(setCreatedby(e.target.value))} />
 

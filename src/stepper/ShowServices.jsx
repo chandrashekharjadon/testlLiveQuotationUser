@@ -44,7 +44,7 @@ import {
 
 import { setPin, setTandE, setDesc } from '../features/Pdfdownload/pdfDownloadSlice';
 import { setUser, setCrmData } from '../features/userData/userDataSlice';
-import { useGetAllQueryesQuery } from '../services/crmapidata';
+import { useGetAllQueriesQuery } from '../services/crmapidata';
 
 const ShowServices = ({ nextStep }) => {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ const ShowServices = ({ nextStep }) => {
   const testMode = allowedUser.includes(User?.Name);
 
   const { data, error, isLoading } = useGetUserDataQuery();
-  const { data: crmData, error: crmError, isLoading: crmIsLoading } = useGetAllQueryesQuery();
+  const { data: crmData, error: crmError, isLoading: crmIsLoading } = useGetAllQueriesQuery();
 
   useEffect(() => {
     if (crmData?.data?.data) {

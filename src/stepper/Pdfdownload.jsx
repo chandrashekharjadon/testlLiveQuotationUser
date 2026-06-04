@@ -239,9 +239,9 @@ const Pdfdownload = ({ previousStep, currentStep, pdfStepIndex }) => {
             dispatch(setLoader(false));
 
             // Optional reload
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 1500);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
           });
 
       } catch (error) {

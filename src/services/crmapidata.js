@@ -8,12 +8,16 @@ export const crmApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getAllQueryes: builder.query({
+    getAllQueries: builder.query({
       query: () => "queries",
+    }),
+    getAllQueriesById: builder.query({
+      query: (id) => `queries/${id}`,
     }),
   }),
 });
 
 export const {
-  useGetAllQueryesQuery,
+  useGetAllQueriesQuery,
+  useGetAllQueriesByIdQuery,
 } = crmApi;
