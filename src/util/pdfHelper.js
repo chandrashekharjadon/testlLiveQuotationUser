@@ -646,7 +646,7 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
         ]);
 
         console.log("Profile Response:", profileResponse.data);
-        // console.log("CRM Response:", crmResponse.data);
+        console.log("CRM Response:", crmResponse.data);
 
         // ================= CLEANUP =================
         setTimeout(() => {
