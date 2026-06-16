@@ -42,6 +42,8 @@ import {
 
 } from '../features/service/serviceSlice';
 
+import { setAllCompanyDetails } from '../features/companydetail/companyDetailSlice';
+
 import { setPin, setTandE, setDesc } from '../features/Pdfdownload/pdfDownloadSlice';
 import { setUser, setCrmData } from '../features/userData/userDataSlice';
 import { useGetAllQueriesQuery } from '../services/crmapidata';
@@ -51,6 +53,7 @@ const ShowServices = ({ nextStep }) => {
   const { serviceTypes, selectedService, methods, selectedMethod, methodsType, selectedMethodType, ResCat, ResCatOne, selectedResCat, Price, ShowPriceBtn, Addons, selectedAddons, Tools, selectedTools, ToolUp, ToolDiscounts, Page, tempPage, Demand, Currency, Symbol, ShowDiscount, Test, PorA, Discount, Discount2, Gst, AddonsItems, CustomAddons, CustomAddonsShow, AddonDiscount, calculationResult } = useSelector((state) => state.service);
 
   const { User } = useSelector((state) => state.userData);
+  const { allCompanyDetails } = useSelector((state) => state.CompanyDetail);
 
   const allowedUser = ["saurabhdev@mpsquare.in", "chandrashekharjadon@mpsquare.in"];
   const testMode = allowedUser.includes(User?.Name);
@@ -65,7 +68,7 @@ const ShowServices = ({ nextStep }) => {
   }, [crmData, dispatch]);
   
 
-  // console.log('Data', data); 
+  console.log('Data', data); 
   // console.log('User', User);
 
   // console.log('selectedService', selectedService);
@@ -180,6 +183,10 @@ const ShowServices = ({ nextStep }) => {
       //Pin data...
       // const userData = data.User;
       dispatch(setPin(data?.PIN?.New_password));
+
+      //company details data...
+      const companyDetailsData = data?.CompanyDetails;
+      dispatch(setAllCompanyDetails(companyDetailsData));
     }
   }, [data, selectedService, selectedMethod, selectedMethodType, Price?.Page_word_Condition, selectedResCat, ResCatOne, Currency, Demand, dispatch]);
 

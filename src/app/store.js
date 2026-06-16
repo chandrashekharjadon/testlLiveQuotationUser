@@ -3,6 +3,7 @@ import serviceReducer from '../features/service/serviceSlice';
 import installmentReducer from '../features/installment/installmentSlice';
 import userDataReducer from '../features/userData/userDataSlice';
 import pdfDownloadReducer from '../features/Pdfdownload/pdfDownloadSlice';
+import companyDetailReducer from '../features/companydetail/companyDetailSlice';
 
 import { setupListeners } from '@reduxjs/toolkit/query'
 import { serviceApi } from '../services/servicedata'
@@ -14,6 +15,7 @@ export const store = configureStore({
     installment: installmentReducer,
     userData: userDataReducer,
     pdfDownload: pdfDownloadReducer,
+    CompanyDetail: companyDetailReducer,
     [serviceApi.reducerPath]: serviceApi.reducer,
     [crmApi.reducerPath]: crmApi.reducer,
   },

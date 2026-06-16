@@ -481,7 +481,7 @@ export const Tool_calc = (ToolUp, Page, threshold, Currency, ToolDiscounts, PorA
 // };
 
 // pdf download...
-export const download_pdf = async (service, installment, userData, TandE, Desc, Api, dispatch) => {
+export const download_pdf = async (service, installment, userData, CompanyData, TandE, Desc, Api, dispatch) => {
     const { selectedService, selectedMethod, Addons, AddonsItems, Price, ResCatOne, Demand, Symbol, ToolUp, calculationResult } = service;
     const { UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, State, City, Country, CreaterEmail, crmQidData, Wrirk_Penic_Guide } = userData;
 
@@ -551,8 +551,8 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
         tools_up: ToolUp,
         toolData: calculationResult?.perPageWord_data?.toolPrice || [],
         tande: TandE,
-        desc_data: cleanText,
-        desc_Name: Desc?.Name,
+        // desc_data: cleanText,
+        // desc_Name: Desc?.Name,
     };
 
     // ================= FINAL JSON =================
@@ -572,6 +572,7 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
         Services: data,
         Installment: installment?.InstallmentData,
         Wrirk_Penic_Guide: Wrirk_Penic_Guide,
+        CompanyDetail: CompanyData,
     };
 
     try {
@@ -634,15 +635,15 @@ export const download_pdf = async (service, installment, userData, TandE, Desc, 
                 },
             }),
 
-            axios.post(
-                `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
-                CrmData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            ),
+            // axios.post(
+            //     `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
+            //     CrmData,
+            //     {
+            //         headers: {
+            //             "Content-Type": "multipart/form-data",
+            //         },
+            //     }
+            // ),
         ]);
 
         console.log("Profile Response:", profileResponse.data);

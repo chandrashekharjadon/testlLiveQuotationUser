@@ -42,7 +42,7 @@ const Installment = ({ nextStep, previousStep }) => {
   const { data: CrmQueryData, error, isLoading } = useGetAllQueriesByIdQuery(QueryId, { skip: !QueryId });
   // Get Data from CRM API and set in store in userDataSlice
   useEffect(() => {
-    if (!CrmQueryData?.data) return;    
+    if (!CrmQueryData?.data) return;
     dispatch(setUserName(CrmQueryData.data?.scholar?.name || 'NA'));
     dispatch(setScholarId(CrmQueryData.data?.scholar?.sid || 'NA'));
     dispatch(setResearchArea(CrmQueryData.data?.area?.name || 'NA'));
@@ -138,10 +138,8 @@ const Installment = ({ nextStep, previousStep }) => {
 
   const isButtonDisabled = Times > 0 && (
     Installments.some((amt) => Number(amt) <= 0) ||
-    Text.some((text) => !text?.trim()) ||
-    !QueryId
+    Text.some((text) => !text?.trim()) || !QueryId || error
   );
-
 
   const isMismatch = parseFloat(InstallmentTotal) !== parseFloat(MainTotal);
 
@@ -248,35 +246,77 @@ const Installment = ({ nextStep, previousStep }) => {
               <div className="col-12 col-md">Main Total: {MainTotal}</div>
             </div>
 
-            <div className="row mb-3 d-flex justify-content-between">
+            <div className="row mb-3 justify-content-between">
               {/* Valid Till */}
-              <div className="col-md-6 mb-3 d-flex flex-column">
+              <div className="col-md-6 mb-3">
                 <label className="form-label fw-medium">
                   VALID Till
                 </label>
-                <DatePicker
-                  selected={SelectedDate}
-                  onChange={(date) => dispatch(setSelectedDate(date))}
-                  showIcon
-                  toggleCalendarOnIconClick
-                  className="form-control"
-                  dateFormat="dd/MM/yyyy"
-                />
+
+                <div className="position-relative">
+                  <DatePicker
+                    selected={SelectedDate}
+                    onChange={(date) => dispatch(setSelectedDate(date))}
+                    showIcon
+                    toggleCalendarOnIconClick
+                    className="form-control"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select Valid Till Date"
+                  />
+                </div>
+
               </div>
 
               {/* Query Id */}
-              <div className="col-md-6 mb-3">
+              <div className="col-md-4 mb-3">
                 <label className="form-label fw-medium">
                   Query Id <span className="text-danger">*</span>
                 </label>
 
-                <Select
-                  options={options}
-                  maxMenuHeight={120}
-                  onChange={(selectedOption) => dispatch(setQueryId(selectedOption?.value))}
-                  placeholder="Select Query Id"
-                  required
-                />
+                <div className="position-relative">
+                  <input
+                    type="text"
+                    className={`form-control ${error?.data?.message ? "is-invalid" : ""
+                      }`}
+                    value={QueryId}
+                    onChange={(e) => dispatch(setQueryId(e.target.value))}
+                    placeholder="Enter Query Id"
+                  />
+
+                  {/* Success Tick */}
+                  {QueryId && CrmQueryData?.data && !error && (
+                    <span
+                      className="position-absolute top-50 end-0 translate-middle-y me-3 text-success"
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        zIndex: 10,
+                      }}
+                    >
+                      ✓
+                    </span>
+                  )}
+
+                  {/* Loading Spinner */}
+                  {isLoading && (
+                    <div
+                      className="position-absolute top-50 end-0 translate-middle-y me-3"
+                      style={{ zIndex: 10 }}
+                    >
+                      <div
+                        className="spinner-border spinner-border-sm text-primary"
+                        role="status"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Error Message */}
+                {error?.data?.message && (
+                  <small className="text-danger d-block mt-1">
+                    {error.data.message}
+                  </small>
+                )}
               </div>
             </div>
 
