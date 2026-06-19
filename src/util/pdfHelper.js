@@ -598,10 +598,20 @@ export const download_pdf = async (service, installment, userData, CompanyData, 
             type: "application/pdf",
         });
 
-        const url = window.URL.createObjectURL(blob);
+        // const url = window.URL.createObjectURL(blob);
+
+        const url = URL.createObjectURL(blob);
+
+        // ================= CREATE DOWNLOAD LINK =================
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName; // force download
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
         // ================= OPEN PDF IMMEDIATELY =================
-        window.open(url, "_blank");
+        // window.open(url, "_blank");
 
         // ================= PROFILE DATA =================
         const ProfileData = new FormData();
