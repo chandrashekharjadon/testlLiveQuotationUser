@@ -42,8 +42,8 @@ const Pdfdownload = ({ previousStep, currentStep, pdfStepIndex }) => {
     }
   }, [CompanyDetail?.allCompanyDetails, companyId, dispatch]);
 
-  console.log('Company Options:', companyOptions);
-  console.log('Selected Company ID:', companyId);
+  // console.log('Company Options:', companyOptions);
+  // console.log('Selected Company ID:', companyId);
 
   const { otp, Pin, shouldFocus, TandE, Desc, Loader } = useSelector(
     (state) => state.pdfDownload
@@ -92,63 +92,116 @@ const Pdfdownload = ({ previousStep, currentStep, pdfStepIndex }) => {
     return () => clearInterval(intervalId);
   }, [Loader]);
 
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   if (otp === Pin) {
+  //     try {
+  //       dispatch(setLoader(true));
+
+  //       // ✅ Success popup immediately
+  //       Swal.fire({
+  //         icon: 'success',
+  //         title: 'Request Sent Successfully',
+  //         text: 'Your PDF has been sent for approval and download process completed.',
+  //         confirmButtonText: 'OK',
+  //       });
+
+  //       const { allCompanyDetails, ...CompanyData } = CompanyDetail;
+
+  //       // ✅ Background process continues
+  //       download_pdf(service, installment, userData, CompanyData, TandE, Desc, Api, dispatch)
+  //         .then(() => {
+  //           console.log("PDF Download Completed");
+  //         })
+  //         .catch((error) => {
+  //           console.error("Download error:", error);
+
+  //           if (error.message === 'Network Error') {
+  //             Swal.fire({
+  //               icon: 'warning',
+  //               title: 'Network Issue',
+  //               text: 'Your network is low or disconnected.',
+  //             });
+  //           } else {
+  //             Swal.fire({
+  //               icon: 'error',
+  //               title: 'Process Failed',
+  //               text: 'Unable to send data to head/CRM.',
+  //             });
+  //           }
+  //         })
+  //         .finally(() => {
+  //           dispatch(setLoader(false));
+
+  //           // Optional reload
+  //           setTimeout(() => {
+  //             window.location.reload();
+  //           }, 1500);
+  //         });
+
+  //     } catch (error) {
+  //       dispatch(setLoader(false));
+
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error',
+  //         text: 'Unexpected error occurred.',
+  //       });
+  //     }
+  //   }
+  // };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (otp === Pin) {
-      try {
-        dispatch(setLoader(true));
+    if (otp !== Pin) return;
 
-        // ✅ Success popup immediately
-        Swal.fire({
-          icon: 'success',
-          title: 'Request Sent Successfully',
-          text: 'Your PDF has been sent for approval and download process completed.',
-          confirmButtonText: 'OK',
-        });
+    try {
+      console.time("TOTAL_DOWNLOAD_PROCESS");
 
-        const { allCompanyDetails, ...CompanyData } = CompanyDetail;
+      dispatch(setLoader(true));
 
-        // ✅ Background process continues
-        download_pdf(service, installment, userData, CompanyData, TandE, Desc, Api, dispatch)
-          .then(() => {
-            console.log("PDF Download Completed");
-          })
-          .catch((error) => {
-            console.error("Download error:", error);
+      const { allCompanyDetails, ...CompanyData } = CompanyDetail;
 
-            if (error.message === 'Network Error') {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Network Issue',
-                text: 'Your network is low or disconnected.',
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Process Failed',
-                text: 'Unable to send data to head/CRM.',
-              });
-            }
-          })
-          .finally(() => {
-            dispatch(setLoader(false));
+      await download_pdf(
+        service,
+        installment,
+        userData,
+        CompanyData,
+        TandE,
+        Desc,
+        Api,
+        dispatch
+      );
 
-            // Optional reload
-            setTimeout(() => {
-              window.location.reload();
-            }, 1500);
-          });
+      console.timeEnd("TOTAL_DOWNLOAD_PROCESS");
 
-      } catch (error) {
-        dispatch(setLoader(false));
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Quotation generated successfully.",
+        confirmButtonText: 'OK',
+      });
 
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Unexpected error occurred.',
-        });
-      }
+    } catch (error) {
+      console.error("Download error:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text:
+          error?.response?.data?.message ||
+          error?.message ||
+          "PDF generation failed",
+      });
+    } finally {
+      dispatch(setLoader(false));
+
+      // Optional reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     }
   };
 

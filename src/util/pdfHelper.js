@@ -508,6 +508,8 @@ export const download_pdf = async (service, installment, userData, CompanyData, 
         cleanText = stripHtmlTags(formattedString);
     }
 
+    console.log("ScholarId", ScholarId);
+
     // ================= DATE =================
     const Today_date = new Date();
     const Ending_date = installment?.SelectedDate;
@@ -573,99 +575,36 @@ export const download_pdf = async (service, installment, userData, CompanyData, 
         Installment: installment?.InstallmentData,
         Wrirk_Penic_Guide: Wrirk_Penic_Guide,
         CompanyDetail: CompanyData,
+        ScholarId,
     };
 
     try {
         dispatch(setLoader(true));
 
-        // ================= PDF GENERATE =================
+        console.time("PDF_API");
+
         const res = await Api.post(
             `${process.env.REACT_APP_BASE_URL}/pdfapi/pdf`,
             jsondata,
             {
-                responseType: "arraybuffer",
-                timeout: 60000,
+                timeout: 120000,
             }
         );
 
-        // ================= PDF BLOB =================
-        const blob = new Blob([res.data], {
-            type: "application/pdf",
-        });
+        console.timeEnd("PDF_API");
 
-        const fileName = `${jsondata.UserName}_${data.service_type}.pdf`;
-        const pdfFile = new File([blob], fileName, {
-            type: "application/pdf",
-        });
+        console.log("PDF Response:", res.data);
 
-        // const url = window.URL.createObjectURL(blob);
+        if (!res.data?.success) {
+            throw new Error("PDF generation failed");
+        }
 
-        const url = URL.createObjectURL(blob);
+        const pdfUrl = `${process.env.REACT_APP_BASE_URL}/api${res.data.pdfUrl}`;
 
-        // ================= CREATE DOWNLOAD LINK =================
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName; // force download
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        // ================= OPEN PDF IMMEDIATELY =================
-        // window.open(url, "_blank");
-
-        // ================= PROFILE DATA =================
-        const ProfileData = new FormData();
-
-        ProfileData.append("file", pdfFile);
-        ProfileData.append("UserName", UserName);
-        ProfileData.append("QueryId", QueryId);
-        ProfileData.append("ResearchArea", ResearchArea);
-        ProfileData.append("ResearchTopic", ResearchTopic);
-        ProfileData.append("Country", Country);
-        ProfileData.append("Course", Course);
-        ProfileData.append("ResearchDomain", ResearchDomain);
-        ProfileData.append("Createdby", Createdby);
-        ProfileData.append("State", State);
-        ProfileData.append("City", City);
-        ProfileData.append("CreaterEmail", CreaterEmail);
-        ProfileData.append("DateNow", Current_Date);
-
-        // ================= CRM DATA =================
-        const CrmData = new FormData();
-
-        CrmData.append("quotation_pdf", pdfFile);
-        CrmData.append("scholar_id", ScholarId);
-
-        // ================= RUN BOTH UPLOADS IN PARALLEL =================
-        const [profileResponse, crmResponse] = await Promise.all([
-            Api.post("/api/profile", ProfileData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    username: UserName,
-                },
-            }),
-
-            // axios.post(
-            //     `${import.meta.env.VITE_CRM_BASE_URL}scholar/quotation-upload`,
-            //     CrmData,
-            //     {
-            //         headers: {
-            //             "Content-Type": "multipart/form-data",
-            //         },
-            //     }
-            // ),
-        ]);
-
-        console.log("Profile Response:", profileResponse.data);
-        console.log("CRM Response:", crmResponse.data);
-
-        // ================= CLEANUP =================
-        setTimeout(() => {
-            window.URL.revokeObjectURL(url);
-        }, 10000);
+        console.log("PDF URL:", pdfUrl);
+        window.open(pdfUrl, "_blank");
 
         dispatch(setLoader(false));
-
         return true;
 
     } catch (error) {

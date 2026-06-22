@@ -51,7 +51,7 @@ const Installment = ({ nextStep, previousStep }) => {
     dispatch(setResearchDomain(CrmQueryData.data?.domain || 'NA'));
   }, [CrmQueryData, dispatch]);
 
-  console.log('QueryId', QueryId);
+  // console.log('QueryId', QueryId);
 
 
   const { calculationResult, Currency, Test } = useSelector((state) => state.service);

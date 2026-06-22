@@ -68,7 +68,7 @@ const ShowServices = ({ nextStep }) => {
   }, [crmData, dispatch]);
   
 
-  console.log('Data', data); 
+  // console.log('Data', data); 
   // console.log('User', User);
 
   // console.log('selectedService', selectedService);
