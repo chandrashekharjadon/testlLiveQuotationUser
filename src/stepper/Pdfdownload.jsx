@@ -31,7 +31,7 @@ const Pdfdownload = ({ previousStep, currentStep, pdfStepIndex }) => {
     }
   }, [service, dispatch]);
 
-  console.log('Pin', Pin);
+  // console.log('Pin', Pin);
   
 
   useEffect(() => {

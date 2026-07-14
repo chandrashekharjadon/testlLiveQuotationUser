@@ -65,8 +65,6 @@ function App() {
       try {
 
         const result = await Api.get(`/api/userId`);
-
-        console.log('response', result);
         const response = result.data;
 
         const loggedUser = {
