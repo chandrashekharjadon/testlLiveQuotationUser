@@ -53,7 +53,6 @@ const Installment = ({ nextStep, previousStep }) => {
 
   // console.log('QueryId', QueryId);
 
-
   const { calculationResult, Currency, Test } = useSelector((state) => state.service);
 
   const {
@@ -82,7 +81,7 @@ const Installment = ({ nextStep, previousStep }) => {
       return;
     }
 
-    if (value >= 0 && value <= 10) {
+    if (value >= 0 && value <= 20) {
       dispatch(setTimes(value));
     } else {
       Swal.fire({

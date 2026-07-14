@@ -5,6 +5,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const companyDetailSlice = createSlice({
   name: 'companyDetail',
   initialState: {
+    CompanyId: '',
     Name: '',
     logo: '',
     address: '',
@@ -13,6 +14,9 @@ const companyDetailSlice = createSlice({
     allCompanyDetails: [],
   },
   reducers: {
+    setCompanyId: (state, action) => {
+      state.CompanyId = action.payload;
+    },
     setName: (state, action) => {
       state.Name = action.payload;
     },
@@ -25,7 +29,7 @@ const companyDetailSlice = createSlice({
     setEmail: (state, action) => {
       state.email = action.payload;
     },
-    setGst: (state, action) => {
+    setCompGst: (state, action) => {
       state.gst = action.payload;
     },
     setAllCompanyDetails: (state, action) => {
@@ -43,11 +47,12 @@ const companyDetailSlice = createSlice({
 });
 
 export const {
+  setCompanyId,
   setName,
   setLogo,
   setAddress,
   setEmail,
-  setGst,
+  setCompGst,
   setAllCompanyDetails,
   reset,
 } = companyDetailSlice.actions;

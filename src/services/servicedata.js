@@ -43,7 +43,10 @@ export const serviceApi = createApi({
     baseQuery: baseQueryWithAuth, // Use custom baseQuery
     endpoints: (builder) => ({
         getUserData: builder.query({
-            query: () => "/api/getAll",
+            query: (CompanyId) => ({
+                url: "/api/getAll",
+                params: CompanyId ? { CompanyId } : {},
+            }),
         }),
     }),
 });

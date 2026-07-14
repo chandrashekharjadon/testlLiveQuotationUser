@@ -5,6 +5,8 @@ import Allstepdata from "./components/Allstepdata";
 
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { InteractionStatus } from "@azure/msal-browser";
+import { setUser } from "./features/userData/userDataSlice";
+import { setCompanyId, setName, setLogo, setAddress, setEmail, setCompGst, setAllCompanyDetails } from "./features/companydetail/companyDetailSlice";
 
 import SignInButton from "./components/Auth/SignInButton";
 import Navbar from "./components/Auth/Navbar";
@@ -12,12 +14,15 @@ import useApi from "./components/Auth/Api";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import ProtectedLayout from "./ProtectedLayout";
+import { useDispatch } from "react-redux";
 
 function App() {
   const [userData, setUserData] = useState({});
   const [isLoader, setIsLoader] = useState(true);
   const [isDelayed, setIsDelayed] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const dispatch = useDispatch();
 
   const isAuthenticated = useIsAuthenticated();
   const { inProgress } = useMsal();
@@ -58,18 +63,59 @@ function App() {
 
     const fetchUserData = async () => {
       try {
+
         const result = await Api.get(`/api/userId`);
-        setUserData(result.data);
-        isFetchDone = true;
-      } catch (error) {
-        hasError = true;
-        if(hasError){
-          Swal.fire('Network Error...', 'Please! Check your Internet Connection', 'error');
+
+        console.log('response', result);
+        const response = result.data;
+
+        const loggedUser = {
+          id: response?._id,
+          name: response.Name,
+          email: response.Name, // if Name stores email
+          role: response.RoleId?.Type,
+          permissions_slug: response.RoleId?.Permissions?.map(permission => permission.Slug) || [],
+          permissions_module: [...new Set(response.RoleId?.Permissions?.map(permission => permission.Module) || []),],
+          company_id: response?.CompanyId?._id || null,
+          company_name: response.CompanyId?.Name || "",
+        };
+
+        setUserData(loggedUser);
+
+        // Redux User
+        dispatch(setUser(loggedUser));
+
+        if (loggedUser?.role === 'Super_Admin') {
+          dispatch(setAllCompanyDetails(response.Company || []));
+        } else if (response?.CompanyId) {
+          const company = response.CompanyId;
+
+          dispatch(setCompanyId(company._id));
+          dispatch(setName(company.Name));
+          dispatch(setLogo(company.logo));
+          dispatch(setAddress(company.address));
+          dispatch(setEmail(company.email));
+          dispatch(setCompGst(company.gst));
         }
+
+        isFetchDone = true;
+
+      } catch (error) {
+
+        hasError = true;
+
+        if (hasError) {
+          Swal.fire(
+            "Network Error...",
+            "Please! Check your Internet Connection",
+            "error"
+          );
+        }
+
         if (error?.response?.status === 403) {
-          Swal.fire('Auth Issue...', error.response.data.error, 'error');
+          Swal.fire("Auth Issue...", error.response.data.error, "error");
         } else {
-          console.error("Error fetching user data:", error);
+          console.error(error);
         }
       }
     };
@@ -85,8 +131,7 @@ function App() {
       clearTimeout(delayTimer);
       clearInterval(intervalId);
     };
-  }, [isAuthenticated, inProgress, Api]);
-
+  }, [isAuthenticated, inProgress, dispatch]);
 
   if (isLoader || !isDelayed) {
     return (
