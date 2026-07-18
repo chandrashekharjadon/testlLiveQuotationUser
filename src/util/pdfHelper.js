@@ -409,12 +409,12 @@ export const download_pdf = async (service, installment, userData, CompanyData, 
         Expiry_Date: Expiry_Date,
         Services: data,
         Installment: installment?.InstallmentData,
-        Wrirk_Penic_Guide: Wrirk_Penic_Guide,
+        Wrirk_Penic_Guide: CompanyData?.CompanyId === "6a463b36d7640a95bc04e6bd" ? Wrirk_Penic_Guide : false,
         CompanyDetail: CompanyData,
         ScholarId,
     };
 
-    console.log('json pdf data:-- ', jsondata);
+    // console.log('json pdf data:-- ', jsondata);
     
 
     try {

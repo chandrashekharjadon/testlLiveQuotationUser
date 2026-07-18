@@ -137,7 +137,7 @@ const Installment = ({ nextStep, previousStep }) => {
 
   const isButtonDisabled = Times > 0 && (
     Installments.some((amt) => Number(amt) <= 0) ||
-    Text.some((text) => !text?.trim()) || !QueryId || error
+    Text.some((text) => !text?.trim()) || (QueryId && error)
   );
 
   const isMismatch = parseFloat(InstallmentTotal) !== parseFloat(MainTotal);
@@ -269,7 +269,7 @@ const Installment = ({ nextStep, previousStep }) => {
               {/* Query Id */}
               <div className="col-md-4 mb-3">
                 <label className="form-label fw-medium">
-                  Query Id <span className="text-danger">*</span>
+                  Query Id
                 </label>
 
                 <div className="position-relative">

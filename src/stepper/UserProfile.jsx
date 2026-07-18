@@ -34,9 +34,10 @@ import { useGetAllQueriesByIdQuery } from '../services/crmapidata';
 
 const UserProfile = ({ nextStep, previousStep }) => {
     const dispatch = useDispatch();
-    const {UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, CountryCode, StateCode,City, countries, states, cities, Wrirk_Penic_Guide} = useSelector(state => state.userData);
+    const { UserName, QueryId, ScholarId, ResearchArea, ResearchTopic, Course, ResearchDomain, Createdby, CountryCode, StateCode, City, countries, states, cities, Wrirk_Penic_Guide } = useSelector(state => state.userData);
 
     const { Test } = useSelector((state) => state.service);
+    const { CompanyId } = useSelector((state) => state.CompanyDetail);
     const { accounts } = useMsal();
 
     useEffect(() => {
@@ -203,23 +204,28 @@ const UserProfile = ({ nextStep, previousStep }) => {
                         </style>
 
                         {/* Checkbox */}
-                        <div className="form-check m-0">
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id="checkChecked"
-                                checked={Wrirk_Penic_Guide}
-                                onChange={(e) =>
-                                    dispatch(setWrirk_Penic_Guide(e.target.checked))
-                                }
-                            />
-                            <label
-                                className={`form-check-label ms-2 fs-5 ${!Wrirk_Penic_Guide ? "pop-animation highlight-label" : "highlight-label"}`}
-                                htmlFor="checkChecked"
-                            >
-                                Wrirk Panic Guide
-                            </label>
-                        </div>
+                        {
+                            CompanyId === '6a463b36d7640a95bc04e6bd' && (
+                                <div className="form-check m-0">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="checkChecked"
+                                        checked={Wrirk_Penic_Guide}
+                                        onChange={(e) =>
+                                            dispatch(setWrirk_Penic_Guide(e.target.checked))
+                                        }
+                                    />
+                                    <label
+                                        className={`form-check-label ms-2 fs-5 ${!Wrirk_Penic_Guide ? "pop-animation highlight-label" : "highlight-label"}`}
+                                        htmlFor="checkChecked"
+                                    >
+                                        Wrirk Panic Guide
+                                    </label>
+                                </div>
+                            )
+                        }
+
 
                         {/* Submit Button */}
                         <button
