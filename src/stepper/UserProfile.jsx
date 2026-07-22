@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import { auth } from "../firebase";
 import {
     setUserName,
     setQueryId,
@@ -20,7 +21,6 @@ import {
     setCity,
     setWrirk_Penic_Guide
 } from '../features/userData/userDataSlice';
-import { useMsal } from '@azure/msal-react';
 import { useGetAllQueriesByIdQuery } from '../services/crmapidata';
 
 // const options = [
@@ -38,14 +38,14 @@ const UserProfile = ({ nextStep, previousStep }) => {
 
     const { Test } = useSelector((state) => state.service);
     const { CompanyId } = useSelector((state) => state.CompanyDetail);
-    const { accounts } = useMsal();
+    const user = auth.currentUser;
 
     useEffect(() => {
-        if (accounts.length > 0) {
-            dispatch(setCreatedby(accounts[0].name));
-            dispatch(setCreaterEmail(accounts[0].username));
+        if (user) {
+            dispatch(setCreatedby(user.displayName));
+            dispatch(setCreaterEmail(user.email));
         }
-    }, [accounts, Test, dispatch]);
+    }, [user, dispatch]);
 
     // const API_KEY = 'NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==';
     const API_KEY = '4f349a31bef048eae97f0d7f3eec8b2aba3ca7312e24fc62ef3ba885f22dac2f';

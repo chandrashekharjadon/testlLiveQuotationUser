@@ -1,23 +1,15 @@
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-
-import React from 'react';
-import './index.css';
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 
-import { store } from './app/store'
-import { Provider } from 'react-redux'
+import "./index.css";
+import App from "./App";
+import { store } from "./app/store";
 
-import { MsalProvider } from '@azure/msal-react';
-import { msalInstance } from "./msalConfig";
-
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <MsalProvider instance={msalInstance}>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </MsalProvider>
+    <Provider store={store}>
+      <App />
+    </Provider>
   </BrowserRouter>
-)
+);

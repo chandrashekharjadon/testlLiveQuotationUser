@@ -3,8 +3,8 @@ import PaginatedTable from "./components/PaginatedTable";
 import Readme from "./components/Readme";
 import Allstepdata from "./components/Allstepdata";
 
-import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { InteractionStatus } from "@azure/msal-browser";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import { setUser } from "./features/userData/userDataSlice";
 import { setCompanyId, setName, setLogo, setAddress, setEmail, setCompGst, setAllCompanyDetails } from "./features/companydetail/companyDetailSlice";
 
@@ -23,12 +23,20 @@ function App() {
   const [progress, setProgress] = useState(0);
 
   const dispatch = useDispatch();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const isAuthenticated = useIsAuthenticated();
-  const { inProgress } = useMsal();
+
   const Api = useApi();
 
   const isUserValid = isAuthenticated && userData && Object.keys(userData).length > 0;
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const delayTimer = setTimeout(() => setIsDelayed(true), 100);
@@ -98,30 +106,32 @@ function App() {
 
         isFetchDone = true;
 
-      } catch (error) {
-
+      }
+      catch (error) {
         hasError = true;
 
-        if (hasError) {
+        if (error?.response?.status === 403) {
           Swal.fire(
-            "Network Error...",
-            "Please! Check your Internet Connection",
+            "Authentication Error",
+            error.response.data.message || "Access denied",
             "error"
           );
-        }
-
-        if (error?.response?.status === 403) {
-          Swal.fire("Auth Issue...", error.response.data.error, "error");
         } else {
+          Swal.fire(
+            "Network Error",
+            "Please check your internet connection.",
+            "error"
+          );
+
           console.error(error);
         }
       }
     };
 
-    if (isAuthenticated && inProgress === InteractionStatus.None) {
+    if (isAuthenticated) {
       startProgress();
       fetchUserData();
-    } else if (!isAuthenticated && inProgress === InteractionStatus.None) {
+    } else {
       setIsLoader(false);
     }
 
@@ -129,7 +139,7 @@ function App() {
       clearTimeout(delayTimer);
       clearInterval(intervalId);
     };
-  }, [isAuthenticated, inProgress, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
   if (isLoader || !isDelayed) {
     return (
@@ -144,7 +154,7 @@ function App() {
     );
   }
 
-  if (!isAuthenticated && inProgress === InteractionStatus.None) {
+  if (!isAuthenticated) {
     return <SignInButton />;
   }
 

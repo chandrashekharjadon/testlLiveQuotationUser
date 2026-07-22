@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Stepper, Step } from 'react-form-stepper';
+import { auth } from "../firebase";
 import StepWizard from 'react-step-wizard';
 import UserProfile from "../stepper/UserProfile";
 import Pdfdownload from '../stepper/Pdfdownload';
-import { useMsal } from '@azure/msal-react';
 import Installment from '../stepper/Installment';
 import ShowServices from '../stepper/ShowServices';
 
@@ -17,8 +17,6 @@ const Allstepdata = () => {
     return today;
   });
 
-  const { accounts } = useMsal();
-
   const { test } = quotationData;
 
   const [userData, setUserData] = useState({
@@ -28,10 +26,10 @@ const Allstepdata = () => {
     Country: 'INDIA',
     Course: '',
     ResearchDomain: '',
-    Createdby: accounts[0].name,
+    Createdby: auth.currentUser?.displayName,
     State: '',
     City: '',
-    CreaterEmail: accounts[0].username,
+    CreaterEmail: auth.currentUser?.email,
   });
 
   // for only test...

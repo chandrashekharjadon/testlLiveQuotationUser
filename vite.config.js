@@ -7,6 +7,6 @@ import EnvironmentPlugin from 'vite-plugin-environment';
 export default defineConfig({
   plugins: [
     react(),
-    EnvironmentPlugin(['REACT_APP_BASE_URL','REACT_APP_REDIRECT','REACT_APP_APPLICATION_ID','REACT_APP_TENANT_INFO'])
+    EnvironmentPlugin(['REACT_APP_BASE_URL'])
   ],
 })
